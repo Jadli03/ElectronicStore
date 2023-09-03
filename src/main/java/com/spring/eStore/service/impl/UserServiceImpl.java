@@ -5,16 +5,21 @@ import com.spring.eStore.entity.User;
 import com.spring.eStore.exception.ResourceNotFoundException;
 import com.spring.eStore.repository.UserRepository;
 import com.spring.eStore.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
@@ -23,6 +28,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto creatUser(UserDto userDto) {
         //generate user id
+        log.info("Creating new user");
         String userId = UUID.randomUUID().toString();
         userDto.setUserId(userId);
         User user = dtoToEntity(userDto);
@@ -51,8 +57,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getAllUsers() {
-        List<User> users = userRepository.findAll();
+    public List<UserDto> getAllUsers(int pageNumber, int pageSize,String sortBy, String sortDir) {
+
+        Sort sort = sortDir.equalsIgnoreCase("desc") ? (Sort.by(sortBy).descending()) : (Sort.by(sortBy).ascending());
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
+        Page<User> page = userRepository.findAll(pageable);
+        List<User> users = page.getContent();
         List<UserDto> dtoList = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
         return dtoList;
     }
