@@ -23,7 +23,6 @@ public class Product {
     private String description;
     private int price;
     private int quantity;
-    @Column(columnDefinition = "datetime")
     private Date addedDate;
     private boolean live;
     private boolean stock;
