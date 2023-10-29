@@ -51,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 ex.printStackTrace();
             }
         }else {
-            log.info("Invalid token");
+            log.info("Invalid token ");
         }
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             ///fetch user
@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }else {
-                log.info("validation token failed");
+                log.info("validation token failed ");
             }
         }
         filterChain.doFilter(request,response);
