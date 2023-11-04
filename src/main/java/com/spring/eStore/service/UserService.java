@@ -6,6 +6,7 @@ import com.spring.eStore.entity.User;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -23,4 +24,5 @@ public interface UserService {
     UserDto getUserByEmail(String email);
     // search user
     List<UserDto> searchUser(String keyword);
+    Optional<User> findUserByEmailOptional(String email);
 }

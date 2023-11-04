@@ -6,6 +6,9 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -24,4 +27,5 @@ public class UserDto {
     private String gender;
     private String about;
     private String imageName;
+    private Set<RoleDto> roles = new HashSet<>();
 }

@@ -2,9 +2,12 @@ package com.spring.eStore.service.impl;
 
 import com.spring.eStore.dto.PageableResponse;
 import com.spring.eStore.dto.UserDto;
+import com.spring.eStore.entity.Role;
 import com.spring.eStore.entity.User;
+import com.spring.eStore.exception.BadApiRequest;
 import com.spring.eStore.exception.ResourceNotFoundException;
 import com.spring.eStore.helper.Helper;
+import com.spring.eStore.repository.RoleRepository;
 import com.spring.eStore.repository.UserRepository;
 import com.spring.eStore.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,16 +40,26 @@ public class UserServiceImpl implements UserService {
     private ModelMapper mapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RoleRepository roleRepository;
     @Value("${user.profile.image.path}")
     private String imagePath;
+    @Value("${normal.role.id}")
+    private String normaRoleId;
     @Override
     public UserDto creatUser(UserDto userDto) {
         //generate user id
         log.info("Creating new user");
+//        Optional<User> isUserExist = userRepository.findByEmail(userDto.getEmail());
+//        if(isUserExist != null) {
+//            throw new BadApiRequest("Email Already Exists!!");
+//        }
         String userId = UUID.randomUUID().toString();
         userDto.setUserId(userId);
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
         User user = dtoToEntity(userDto);
+        Role role = roleRepository.findById(normaRoleId).get();
+        user.getRoles().add(role);
         User savedUser = userRepository.save(user);
         UserDto newUserDto = entityToDto(savedUser);
         return newUserDto;
@@ -75,7 +89,7 @@ public class UserServiceImpl implements UserService {
         }catch(NoSuchFileException ex) {
             log.info("user does not have image");
         }
-
+        user.setRoles(null);
         userRepository.delete(user);
     }
 
@@ -106,6 +120,11 @@ public class UserServiceImpl implements UserService {
        List<User> users = userRepository.findByNameContaining(keyword);
        List<UserDto> dtoList = users.stream().map(user -> entityToDto(user)).collect(Collectors.toList());
         return dtoList;
+    }
+
+    @Override
+    public Optional<User> findUserByEmailOptional(String email) {
+        return userRepository.findByEmail(email);
     }
 
 
