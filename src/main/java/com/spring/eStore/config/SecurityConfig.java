@@ -3,16 +3,15 @@ package com.spring.eStore.config;
 import com.spring.eStore.security.JwtAuthenticationEntryPoint;
 import com.spring.eStore.security.JwtAuthenticationFilter;
 import com.spring.eStore.service.impl.CustomUserDetailService;
+import org.apache.catalina.filters.CorsFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,8 +19,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
     @Autowired
     private CustomUserDetailService userDetailService;
@@ -29,6 +33,12 @@ public class SecurityConfig {
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private  final String[] SWAGGER_PUBLIC_URLS = {
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-resources/**",
+            "/v3/api-docs/**",
+    };
 //    @Bean
 //    public UserDetailsService userDetailsService() {
 //        //user create
@@ -57,11 +67,12 @@ public class SecurityConfig {
 //                .logoutUrl("/logout");
         //basic auth
         http.csrf(csrf -> csrf.disable())
-                        .cors(cors -> cors.disable())
+                .cors(cors -> cors.disable())
                                 .authorizeHttpRequests(auth ->
                                         auth.requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
                                                 .requestMatchers("/auth/login","/auth/google").permitAll()
                                                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                                                .requestMatchers(SWAGGER_PUBLIC_URLS).permitAll()
                                                 .anyRequest().authenticated())
                                         .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                                         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -85,4 +96,22 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
+    // CORS configs
+//    @Bean
+//    public FilterRegistrationBean corsFilter() {
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowCredentials(true);
+//        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+//        configuration.addAllowedHeader("Authorization");
+//        configuration.addAllowedHeader("Content-Type");
+//        configuration.addAllowedHeader("Accept");
+//        configuration.addAllowedMethod("*");
+//        configuration.setMaxAge(3600L);
+//        source.registerCorsConfiguration("/**", configuration);
+//        FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+//        filterRegistrationBean.setOrder(-110);
+//        return filterRegistrationBean;
+//    }
 }

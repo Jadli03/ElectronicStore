@@ -3,6 +3,7 @@ package com.spring.eStore.controller;
 import com.spring.eStore.dto.*;
 import com.spring.eStore.service.FileService;
 import com.spring.eStore.service.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import java.io.InputStream;
 
 @RestController
 @RequestMapping("/products")
+@SecurityRequirement(name="scheme1")
 public class ProductController {
 
     @Autowired

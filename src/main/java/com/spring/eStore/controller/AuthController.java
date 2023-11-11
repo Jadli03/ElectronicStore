@@ -11,6 +11,8 @@ import com.spring.eStore.entity.User;
 import com.spring.eStore.exception.BadApiRequest;
 import com.spring.eStore.security.JwtHelper;
 import com.spring.eStore.service.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @Slf4j
+@Tag(name="AuthController", description = "Apis for Auth Authentication")
+@SecurityRequirement(name="scheme1")
 public class AuthController {
 
     @Autowired

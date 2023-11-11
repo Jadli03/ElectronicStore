@@ -6,6 +6,11 @@ import com.spring.eStore.dto.PageableResponse;
 import com.spring.eStore.dto.UserDto;
 import com.spring.eStore.service.FileService;
 import com.spring.eStore.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +32,8 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/users")
+@Tag(name="UserController", description = "API for operations related to user")
+@SecurityRequirement(name="scheme1")
 public class UserController {
     @Autowired
     private UserService userService;
@@ -37,6 +44,12 @@ public class UserController {
     private String imageUploadPath;
     //create
     @PostMapping
+    @Operation(summary="create new user", description = "user creation api")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode="200", description="Success | OK"),
+            @ApiResponse(responseCode="401", description="Not Authorized"),
+            @ApiResponse(responseCode="201", description="new user created"),
+    })
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
         UserDto userDto1 = userService.creatUser(userDto);
         return new ResponseEntity<>(userDto1, HttpStatus.CREATED);
@@ -59,6 +72,7 @@ public class UserController {
     }
     //get all
     @GetMapping
+    @Operation(summary="Get All Users", description = "get all user api")
     public ResponseEntity<PageableResponse<UserDto>> getAllUsers(
             @RequestParam(value="pageNumber",defaultValue = "0", required = false) int pageNumber,
             @RequestParam(value="pageSize",defaultValue = "10", required = false) int pageSize,
@@ -70,6 +84,7 @@ public class UserController {
     }
     //get single
     @GetMapping("/{userId}")
+    @Operation(summary="Get user by Id")
     public ResponseEntity<UserDto> getUser(@PathVariable String userId) {
         return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }

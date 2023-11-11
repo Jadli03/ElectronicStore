@@ -6,6 +6,7 @@ import com.spring.eStore.dto.PageableResponse;
 import com.spring.eStore.dto.ProductDto;
 import com.spring.eStore.service.CategoryService;
 import com.spring.eStore.service.ProductService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/category")
+@SecurityRequirement(name="scheme1")
 public class CategoryController {
 
     @Autowired
